@@ -25,6 +25,11 @@ public class HuntingServiceImpl implements HuntingService {
     }
 
     @Override
+    public Hunting getHuntingById(Long id) {
+        return huntingRepository.findById(id).orElseThrow(() -> new RuntimeException("Hunting id " + id + " not found"));
+    }
+
+    @Override
     public Hunting addHuntingResult(Hunting hunting) {
         Long competitionId = hunting.getCompetition().getId();
         Long memberId = hunting.getMember().getId();
@@ -60,5 +65,11 @@ public class HuntingServiceImpl implements HuntingService {
     @Override
     public List<Hunting> getHuntingsByCompetitionAndMember(Long competitionId, Long memberId) {
         return huntingRepository.findByCompetitionIdAndMemberId(competitionId, memberId);
+    }
+
+    @Override
+    public void deleteHunting(Long id) {
+        getHuntingById(id);
+        huntingRepository.deleteById(id);
     }
 }

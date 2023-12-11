@@ -30,6 +30,12 @@ public class HuntingController {
         }
     }
 
+    // get hunting by id
+    @GetMapping("/{id}")
+    public ResponseEntity getHuntingById(@PathVariable Long id) {
+        return ResponseMessage.ok(huntingService.getHuntingById(id), "Success");
+    }
+
     // get huntings by competition
     @GetMapping("/competition/{competitionId}")
     public ResponseEntity getHuntingsByCompetition(@PathVariable Long competitionId) {
@@ -50,5 +56,12 @@ public class HuntingController {
         }else {
             return ResponseMessage.ok(huntings, "Success");
         }
+    }
+
+    // delete hunting
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteHunting(@PathVariable Long id) {
+        huntingService.deleteHunting(id);
+        return ResponseMessage.ok(null,"Hunting deleted successfully");
     }
 }
