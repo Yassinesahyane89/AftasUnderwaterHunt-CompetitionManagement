@@ -1,6 +1,7 @@
 package com.example.aftas.service.Iml;
 
 import com.example.aftas.model.Hunting;
+import com.example.aftas.model.Ranking;
 import com.example.aftas.repository.HuntingRepository;
 import com.example.aftas.service.HuntingService;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class HuntingServiceImpl implements HuntingService {
     }
 
     @Override
-    public void addHuntingResult(Hunting hunting) {
+    public Hunting addHuntingResult(Hunting hunting) {
         Long competitionId = hunting.getCompetition().getId();
         Long memberId = hunting.getMember().getId();
         Long fishId = hunting.getFish().getId();
@@ -38,11 +39,16 @@ public class HuntingServiceImpl implements HuntingService {
         rankingService.getRankingsByMemberIdAndCompetitionId(competitionId, memberId);
         // check if fish has already been caught by this member in this competition if yes acquirement the number of fish caught
         Hunting existingHunting = huntingRepository.findByCompetitionIdAndMemberIdAndFishId(competitionId, memberId, fishId);
+
+        Ranking ranking = rankingService.getRankingsByMemberIdAndCompetitionId(competitionId, memberId);
+        ranking.setScore(ranking.getScore() + hunting.getFish().getLevel().getPoint());
+        rankingService.updateRanking(ranking, ranking.getId());
+
         if(existingHunting != null) {
             existingHunting.setNomberOfFish(existingHunting.getNomberOfFish() + 1);
-            huntingRepository.save(existingHunting);
+            return huntingRepository.save(existingHunting);
         } else {
-            huntingRepository.save(hunting);
+            return huntingRepository.save(hunting);
         }
     }
 
