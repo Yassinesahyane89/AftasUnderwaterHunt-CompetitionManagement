@@ -1,11 +1,14 @@
 package com.example.aftas.controller;
 
+import com.example.aftas.dto.MemberRequestDTO;
 import com.example.aftas.handlers.response.ResponseMessage;
 import com.example.aftas.model.Member;
 import com.example.aftas.service.MemberService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -18,17 +21,22 @@ public class MemberController {
 
     @GetMapping("/{id}")
     public ResponseEntity getMemberById(@PathVariable Long id) {
-        Member member = memberService.getMemberById(id);
-        if(member == null) {
+        return ResponseMessage.ok( memberService.getMemberById(id), "Success");
+    }
+
+    @GetMapping
+    public ResponseEntity getAllMembers() {
+        List<Member> members = memberService.getAllMembers();
+        if(members.isEmpty()) {
             return ResponseMessage.notFound("Member not found");
         }else {
-            return ResponseMessage.ok(member, "Success");
+            return ResponseMessage.ok(members, "Success");
         }
     }
 
     @PostMapping
-    public ResponseEntity addMember(@Valid @RequestBody Member member) {
-        Member member1 = memberService.addMember(member);
+    public ResponseEntity addMember(@Valid @RequestBody MemberRequestDTO memberRequestDTO) {
+        Member member1 = memberService.addMember(memberRequestDTO.toMember());
         if(member1 == null) {
             return ResponseMessage.badRequest("Member not created");
         }else {
@@ -36,13 +44,13 @@ public class MemberController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity searchMember(@RequestBody String name) {
-        Member member = memberService.searchMember(name);
-        if(member == null) {
+        List<Member> members = memberService.findByNameOrMembershipNumberOrFamilyName(name);
+        if(members.isEmpty()) {
             return ResponseMessage.notFound("Member not found");
         }else {
-            return ResponseMessage.ok(member, "Success");
+            return ResponseMessage.ok(members, "Success");
         }
     }
 

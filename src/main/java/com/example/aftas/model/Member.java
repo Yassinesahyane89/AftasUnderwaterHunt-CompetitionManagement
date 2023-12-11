@@ -14,6 +14,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +29,9 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    private int membershipNumber;
+
     @NotNull(message = "Name is required")
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
     private String name;
@@ -39,7 +43,7 @@ public class Member {
     @NotNull(message = "Access date is required")
     @PastOrPresent(message = "Access date must be in the present or past")
     @Temporal(TemporalType.DATE)
-    private Date accessDate;
+    private LocalDate accessDate;
 
     @NotNull(message = "Nationality is required")
     private String nationality;

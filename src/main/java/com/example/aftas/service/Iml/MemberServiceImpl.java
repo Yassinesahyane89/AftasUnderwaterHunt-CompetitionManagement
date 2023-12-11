@@ -5,6 +5,8 @@ import com.example.aftas.repository.MemberRepository;
 import com.example.aftas.service.MemberService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class MemberServiceImpl implements MemberService
 {
@@ -15,17 +17,28 @@ public class MemberServiceImpl implements MemberService
     }
     @Override
     public Member getMemberById(Long id) {
-        return memberRepository.findById(id).orElse(null);
+        return memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member id " + id + " not found"));
+    }
+
+    @Override
+    public List<Member> getAllMembers() {
+        return memberRepository.findAll();
     }
 
     @Override
     public Member addMember(Member member) {
+        // add access date and it's date of today
+        member.setAccessDate(java.time.LocalDate.now());
+        // add identity number do UUId
+        member.setIdentityNumber(java.util.UUID.randomUUID().toString());
+        // add membership number integer and must be unique
+        member.setMembershipNumber((int) (memberRepository.count() + 1));
         return memberRepository.save(member);
     }
 
     @Override
-    public Member searchMember(String name) {
-        return memberRepository.findByName(name);
+    public List<Member> findByNameOrMembershipNumberOrFamilyName(String searchTerm) {
+        return memberRepository.findByMembershipNumberOrNameOrFamilyName(searchTerm);
     }
 
     @Override
@@ -33,10 +46,8 @@ public class MemberServiceImpl implements MemberService
         Member existingMember = getMemberById(id);
         existingMember.setName(member.getName());
         existingMember.setFamilyName(member.getFamilyName());
-        existingMember.setAccessDate(member.getAccessDate());
         existingMember.setNationality(member.getNationality());
         existingMember.setIdentityDocumentType(member.getIdentityDocumentType());
-        existingMember.setIdentityNumber(member.getIdentityNumber());
         return memberRepository.save(existingMember);
     }
 

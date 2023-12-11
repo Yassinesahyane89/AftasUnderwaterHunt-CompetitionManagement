@@ -67,7 +67,6 @@ public class LevelServiceImpl implements LevelService {
 
     @Override
     public void deleteLevel(Long id) {
-        getLevelById(id);
         levelRepository.deleteById(id);
     }
 }

@@ -62,7 +62,12 @@ public class FishController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteFish(@PathVariable Long id) {
-        fishService.deleteFish(id);
-        return ResponseMessage.ok(null,"Fish deleted successfully");
+        Fish fish = fishService.getFishById(id);
+        if(fish == null) {
+            return ResponseMessage.notFound("Fish not found");
+        }else {
+            fishService.deleteFish(id);
+            return ResponseMessage.ok(null,"Fish deleted successfully");
+        }
     }
 }
