@@ -8,19 +8,26 @@ import org.springframework.stereotype.Service;
 @Service
 public class RankingServiceImpl implements RankingService {
     private RankingRepository rankingRepository;
+    private MemberServiceImpl memberService;
+    private CompetitionServiceImpl competitionService;
 
-    public RankingServiceImpl(RankingRepository rankingRepository) {
+    public RankingServiceImpl(RankingRepository rankingRepository, MemberServiceImpl memberService, CompetitionServiceImpl competitionService) {
         this.rankingRepository = rankingRepository;
+        this.memberService = memberService;
+        this.competitionService = competitionService;
     }
     @Override
     public Ranking getRankingsByMemberIdAndCompetitionId(Long competitionId, Long memberId) {
+        // check if member exists
+        memberService.getMemberById(memberId);
+        // check if competition exists
+        competitionService.getCompetitionById(competitionId);
         Ranking ranking= rankingRepository.findByMemberIdAndCompetitionId(memberId, competitionId);
         if (ranking == null) {
             throw new RuntimeException("Member id " + memberId + " has not participated in competition id " + competitionId);
         }
         return ranking;
     }
-
     @Override
     public Ranking getRankingById(Long id) {
         return rankingRepository.findById(id).orElseThrow(() -> new RuntimeException("Ranking id " + id + " not found"));
