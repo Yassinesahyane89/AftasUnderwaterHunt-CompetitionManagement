@@ -44,7 +44,7 @@ public class FishServiceImpl implements FishService {
 
     @Override
     public Fish updateFish(Fish fish, Long id) {
-        Fish existingFish = getFishById(fish.getId());
+        Fish existingFish = getFishById(id);
         existingFish.setName(fish.getName());
         existingFish.setWeight(fish.getWeight());
         // check if level is already exist

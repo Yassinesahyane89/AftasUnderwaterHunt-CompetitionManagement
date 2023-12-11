@@ -24,11 +24,9 @@ public record FishRequestDTO (
         Fish.FishBuilder fishBuilder =  new Fish().builder()
                 .name(name)
                 .weight(weight);
-
         if(level_id != null) {
             fishBuilder.level(Level.builder().id(level_id).build());
         }
-
         return fishBuilder.build();
     }
 }

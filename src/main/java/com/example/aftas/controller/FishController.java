@@ -49,4 +49,20 @@ public class FishController {
             return ResponseMessage.created(fish, "Fish created successfully");
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity updateFish(@Valid @RequestBody FishRequestDTO fishRequestDTO, @PathVariable Long id) {
+        Fish fish = fishService.updateFish(fishRequestDTO.toFish(), id);
+        if(fish == null) {
+            return ResponseMessage.badRequest("Fish not updated");
+        }else {
+            return ResponseMessage.created(fish, "Fish updated successfully");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteFish(@PathVariable Long id) {
+        fishService.deleteFish(id);
+        return ResponseMessage.ok(null,"Fish deleted successfully");
+    }
 }
