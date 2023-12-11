@@ -1,5 +1,6 @@
 package com.example.aftas.service.Iml;
 
+import com.example.aftas.handlers.exception.OperationException;
 import com.example.aftas.handlers.exception.ResourceNotFoundException;
 import com.example.aftas.model.Competition;
 import com.example.aftas.model.Member;
@@ -8,6 +9,10 @@ import com.example.aftas.repository.CompetitionRepository;
 import com.example.aftas.service.CompetitionService;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -44,29 +49,64 @@ public class CompetitionServiceImpl implements CompetitionService {
         // here i want to check that Every day there can be only one competition
         Competition competition1 = competitionRepository.findByDate(competition.getDate());
         if (competition1 != null) {
-            throw new RuntimeException("There is already a competition on " + competition.getDate());
+            throw new OperationException("There is already a competition on " + competition.getDate());
         }
 
         // here i want to check that Competition start time must be before end time
         if (competition.getStartTime().isAfter(competition.getEndTime())) {
-            throw new RuntimeException("Start time must be before end time");
+            throw new OperationException("Start time must be before end time");
         }
 
         // here i want to generate a unique code for the competition from that date and location  pattern: ims-22-12-23, ims is the third first letters of the location
-        String code = competition.getLocation().substring(0, 3) + "-" + competition.getDate().getDay() + "-" + competition.getDate().getMonth() + "-" + competition.getDate().getYear();
-
+        String code = generateCode(competition.getLocation(), competition.getDate());
         competition.setCode(code);
+
         return competitionRepository.save(competition);
 
+    }
+
+    public static String generateCode(String location, Date date) {
+        String locationCode = location.substring(0, 3).toLowerCase();
+
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yy-MM-dd");
+        String formattedDate = dateFormatter.format(date);
+
+        return locationCode + "-" + formattedDate;
+    }
+
+    public static String generateCode(String location, LocalDate date) {
+        String locationCode = location.substring(0, 3).toLowerCase();
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yy-MM-dd");
+        String formattedDate = date.format(dateFormatter);
+
+        return locationCode + "-" + formattedDate;
     }
 
     @Override
     public Competition updateCompetition(Competition competition, Long id) {
         Competition existingCompetition = getCompetitionById(id);
+        // check if date is changed so we can check if there is already a competition on that date
+        System.out.println(competition.getDate());
+        System.out.println(existingCompetition.getDate());
+        if (!competition.getDate().equals(existingCompetition.getDate())) {
+            Competition competition1 = competitionRepository.findByDate(competition.getDate());
+            if (competition1 != null) {
+                throw new OperationException("There is already a competition on " + competition.getDate());
+            }
+        }
         existingCompetition.setDate(competition.getDate());
+        if (competition.getStartTime().isAfter(competition.getEndTime())) {
+            throw new OperationException("Start time must be before end time");
+        }
         existingCompetition.setStartTime(competition.getStartTime());
         existingCompetition.setEndTime(competition.getEndTime());
         existingCompetition.setLocation(competition.getLocation());
+        if(competition.getLocation() != existingCompetition.getLocation() || competition.getDate() != existingCompetition.getDate()){
+            String code = generateCode(competition.getLocation(), competition.getDate());
+            existingCompetition.setCode(code);
+        }
+
         existingCompetition.setAmount(competition.getAmount());
         return competitionRepository.save(existingCompetition);
     }
@@ -78,26 +118,29 @@ public class CompetitionServiceImpl implements CompetitionService {
     }
 
     @Override
-    public void registerMemberForCompetition(Long competitionId, Long memberId) {
+    public Ranking registerMemberForCompetition(Ranking ranking1) {
+        Long competitionId = ranking1.getCompetition().getId();
+        Long memberId = ranking1.getMember().getId();
         // here i want to check that the competition is exist
         Competition competition = getCompetitionById(competitionId);
         if(competition == null){
-            throw new RuntimeException("Competition id " + competitionId + " not found");
+            throw new ResourceNotFoundException("Competition id " + competitionId + " not found");
         }
         // here i want to check that the member is exist
         Member member = memberService.getMemberById(memberId);
         if(member == null){
-            throw new RuntimeException("Member id " + memberId + " not found");
+            throw new ResourceNotFoundException("Member id " + memberId + " not found");
         }
         // here i want to check that the member is not already registered for the competition
         if(competition.getRanking().stream().anyMatch(ranking -> ranking.getMember().getId().equals(memberId))){
-            throw new RuntimeException("Member id " + memberId + " is already registered for the competition");
+            throw new OperationException("Member id " + memberId + " is already registered for the competition");
         }
         // here i want to check that the competition is not started yet and are still have 24 hours before the start time
-        if(competition.getStartTime().isBefore(competition.getStartTime().minusDays(1))){
-            throw new RuntimeException("Competition id " + competitionId + " is closed for registration");
+        if(competition.getStartTime().isBefore(competition.getStartTime().minusHours(24))){
+            throw new OperationException("Competition id " + competitionId + " is closed for registration");
         }
-
+        // here i want to register the member for the competition
+        return rankingService.addRanking(ranking1);
     }
 
     @Override
@@ -119,8 +162,8 @@ public class CompetitionServiceImpl implements CompetitionService {
         if(competition.getRanking().stream().noneMatch(ranking1 -> ranking1.getMember().getId().equals(memberId))){
             throw new RuntimeException("Member id " + memberId + " is not registered for the competition");
         }
-        // here i want to check that the competition is not passed 24 hours after the end time
-        if(competition.getEndTime().isBefore(competition.getEndTime().plusDays(1))){
+        // here i want to check that the competition is not passed 24 hours after the end time here type of EndTime is LocalTime
+        if(competition.getEndTime().isBefore(competition.getEndTime().plusHours(24))){
             throw new RuntimeException("Competition id " + competitionId + " is closed for registration");
         }
         // here i want to register the result for the member

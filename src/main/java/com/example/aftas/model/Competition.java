@@ -1,5 +1,6 @@
 package com.example.aftas.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -32,17 +35,16 @@ public class Competition {
 
     @NotNull(message = "Name cannot be null")
     @Temporal(TemporalType.DATE)
-    private Date date;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate date;
 
     @NotNull(message = "Start time cannot be null")
-    @Future(message = "Start time must be in the future")
-    @DateTimeFormat(pattern = "HH:mm:ss")
-    private LocalDateTime startTime;
+    @JsonFormat(pattern = "HH:mm:ss")
+    private LocalTime startTime;
 
     @NotNull(message = "Start time cannot be null")
-    @Future(message = "Start time must be in the future")
-    @DateTimeFormat(pattern = "HH:mm:ss")
-    private LocalDateTime endTime;
+    @JsonFormat(pattern = "HH:mm:ss")
+    private LocalTime endTime;
 
     @NotNull(message = "Location cannot be null")
     @Size(min = 2, max = 50, message = "Location must be between 2 and 50 characters")
@@ -51,6 +53,10 @@ public class Competition {
     @NotNull(message = "Amount cannot be null")
     @Min(value = 0, message = "Amount must be greater than 0")
     private int amount;
+
+    @NotNull(message = "Total member cannot be null")
+    @Min(value = 0, message = "Total member must be greater than 0")
+    private int totalMember;
 
     @OneToMany(mappedBy = "competition")
     private List<Ranking> ranking;
@@ -67,4 +73,5 @@ public class Competition {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date updatedAt;
+
 }

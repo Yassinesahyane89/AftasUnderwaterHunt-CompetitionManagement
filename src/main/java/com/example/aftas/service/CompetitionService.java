@@ -12,6 +12,6 @@ public interface CompetitionService {
     Competition addCompetition(Competition competition);
     Competition updateCompetition(Competition competition, Long id);
     void deleteCompetition(Long id);
-    void registerMemberForCompetition(Long competitionId, Long memberId);
+    Ranking registerMemberForCompetition(Ranking ranking);
     void recordCompetitionResult(Ranking ranking);
 }
