@@ -7,6 +7,8 @@ import com.example.aftas.model.Member;
 import com.example.aftas.model.Ranking;
 import com.example.aftas.repository.CompetitionRepository;
 import com.example.aftas.service.CompetitionService;
+import com.example.aftas.service.MemberService;
+import com.example.aftas.service.RankingService;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -19,11 +21,10 @@ import java.util.List;
 public class CompetitionServiceImpl implements CompetitionService {
 
     private final CompetitionRepository competitionRepository;
-    private final MemberServiceImpl memberService;
-    private final RankingServiceImpl rankingService;
+    private final MemberService memberService;
+    private final RankingService rankingService;
 
-
-    public CompetitionServiceImpl(CompetitionRepository competitionRepository, MemberServiceImpl memberService, RankingServiceImpl rankingService) {
+    public CompetitionServiceImpl(CompetitionRepository competitionRepository, MemberService memberService, RankingService rankingService) {
         this.competitionRepository = competitionRepository;
         this.memberService = memberService;
         this.rankingService = rankingService;
@@ -144,29 +145,33 @@ public class CompetitionServiceImpl implements CompetitionService {
     }
 
     @Override
-    public void recordCompetitionResult(Ranking ranking) {
-        Long competitionId = ranking.getCompetition().getId();
-        Long memberId = ranking.getMember().getId();
-        int result = ranking.getScore();
-        // here i want to check that the competition is exist
-        Competition competition = getCompetitionById(competitionId);
-        if(competition == null){
-            throw new RuntimeException("Competition id " + competitionId + " not found");
-        }
-        // here i want to check that the member is exist
-        Member member = memberService.getMemberById(memberId);
-        if(member == null){
-            throw new RuntimeException("Member id " + memberId + " not found");
-        }
-        // here i want to check that the member is registered for the competition
-        if(competition.getRanking().stream().noneMatch(ranking1 -> ranking1.getMember().getId().equals(memberId))){
-            throw new RuntimeException("Member id " + memberId + " is not registered for the competition");
-        }
-        // here i want to check that the competition is not passed 24 hours after the end time here type of EndTime is LocalTime
-        if(competition.getEndTime().isBefore(competition.getEndTime().plusHours(24))){
-            throw new RuntimeException("Competition id " + competitionId + " is closed for registration");
-        }
-        // here i want to register the result for the member
-        rankingService.addRanking(ranking);
+    public Ranking recordCompetitionResult(Ranking ranking, Long id) {
+        return rankingService.updateRankingScore(ranking, id);
     }
+//    @Override
+//    public void recordCompetitionResult(Ranking ranking) {
+//        Long competitionId = ranking.getCompetition().getId();
+//        Long memberId = ranking.getMember().getId();
+//        int result = ranking.getScore();
+//        // here i want to check that the competition is exist
+//        Competition competition = getCompetitionById(competitionId);
+//        if(competition == null){
+//            throw new RuntimeException("Competition id " + competitionId + " not found");
+//        }
+//        // here i want to check that the member is exist
+//        Member member = memberService.getMemberById(memberId);
+//        if(member == null){
+//            throw new RuntimeException("Member id " + memberId + " not found");
+//        }
+//        // here i want to check that the member is registered for the competition
+//        if(competition.getRanking().stream().noneMatch(ranking1 -> ranking1.getMember().getId().equals(memberId))){
+//            throw new RuntimeException("Member id " + memberId + " is not registered for the competition");
+//        }
+//        // here i want to check that the competition is not passed 24 hours after the end time here type of EndTime is LocalTime
+//        if(competition.getEndTime().isBefore(competition.getEndTime().plusHours(24))){
+//            throw new RuntimeException("Competition id " + competitionId + " is closed for registration");
+//        }
+//        // here i want to register the result for the member
+//        rankingService.addRanking(ranking);
+//    }
 }

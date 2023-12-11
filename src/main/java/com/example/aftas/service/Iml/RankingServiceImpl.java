@@ -36,6 +36,14 @@ public class RankingServiceImpl implements RankingService {
         existingRanking.setScore(ranking.getScore());
         return rankingRepository.save(existingRanking);
     }
+
+    @Override
+    public Ranking updateRankingScore(Ranking ranking, Long id) {
+        Ranking existingRanking = getRankingById(id);
+        existingRanking.setScore(ranking.getScore()+existingRanking.getScore());
+        return rankingRepository.save(existingRanking);
+    }
+
     @Override
     public void deleteRanking(Long id) {
         getRankingById(id);

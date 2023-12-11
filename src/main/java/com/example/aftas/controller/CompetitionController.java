@@ -1,6 +1,7 @@
 package com.example.aftas.controller;
 
 import com.example.aftas.dto.CompetitionRequestDTO;
+import com.example.aftas.dto.RecordResultDTO;
 import com.example.aftas.dto.RegisterMemberRequest;
 import com.example.aftas.handlers.response.ResponseMessage;
 import com.example.aftas.model.Competition;
@@ -73,6 +74,13 @@ public class CompetitionController {
     public ResponseEntity registerMemberForCompetition(@Valid @RequestBody RegisterMemberRequest registerMemberRequest) {
         Ranking ranking = competitionService.registerMemberForCompetition(registerMemberRequest.toRanking());
         return ResponseMessage.ok(ranking,"Member registered successfully");
+    }
+
+    // record competition result
+    @PostMapping("/{id}/record-result")
+    public ResponseEntity recordCompetitionResult(@Valid @RequestBody RecordResultDTO recordResultDTO, @PathVariable Long id) {
+        Ranking ranking = competitionService.recordCompetitionResult(recordResultDTO.toRanking(), id);
+        return ResponseMessage.ok(ranking,"Competition result recorded successfully");
     }
 
 }

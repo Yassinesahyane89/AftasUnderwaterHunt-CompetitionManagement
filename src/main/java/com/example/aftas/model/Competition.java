@@ -1,6 +1,7 @@
 package com.example.aftas.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -59,6 +60,7 @@ public class Competition {
     private int totalMember;
 
     @OneToMany(mappedBy = "competition")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Ranking> ranking;
 
     @OneToMany(mappedBy = "competition")

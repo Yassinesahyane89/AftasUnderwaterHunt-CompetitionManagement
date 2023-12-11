@@ -1,6 +1,7 @@
 package com.example.aftas.model;
 
 import com.example.aftas.enums.IdentityDocumentType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -57,6 +58,7 @@ public class Member {
     private List<Hunting> hunting;
 
     @OneToMany(mappedBy = "member")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Ranking> ranking;
 
 
