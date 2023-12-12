@@ -55,6 +55,7 @@ public class Member {
     private String identityNumber;
 
     @OneToMany(mappedBy = "member")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Hunting> hunting;
 
     @OneToMany(mappedBy = "member")

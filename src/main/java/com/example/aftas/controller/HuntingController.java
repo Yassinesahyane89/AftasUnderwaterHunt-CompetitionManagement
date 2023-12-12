@@ -1,9 +1,11 @@
 package com.example.aftas.controller;
 
 import com.example.aftas.dto.HuntingRequestDTO;
+import com.example.aftas.dto.HuntingUpdateRequestDTO;
 import com.example.aftas.handlers.response.ResponseMessage;
 import com.example.aftas.model.Hunting;
 import com.example.aftas.service.HuntingService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +22,8 @@ public class HuntingController {
     }
 
     // add hunting result
-    @PostMapping
-    public ResponseEntity addHuntingResult(HuntingRequestDTO huntingRequestDTO) {
+    @PostMapping("/add-hunting-result")
+    public ResponseEntity addHuntingResult(@Valid @RequestBody HuntingRequestDTO huntingRequestDTO) {
         Hunting hunting = huntingService.addHuntingResult(huntingRequestDTO.toHunting());
         if(hunting == null) {
             return ResponseMessage.badRequest("Hunting result not added");
@@ -55,6 +57,17 @@ public class HuntingController {
             return ResponseMessage.notFound("Huntings not found");
         }else {
             return ResponseMessage.ok(huntings, "Success");
+        }
+    }
+
+    // update hunting
+    @PutMapping("/{id}")
+    public ResponseEntity updateHunting(@RequestBody HuntingUpdateRequestDTO huntingUpdateRequestDTO, @PathVariable Long id) {
+        Hunting hunting = huntingService.updateHunting(huntingUpdateRequestDTO.toHunting(), id);
+        if(hunting == null) {
+            return ResponseMessage.badRequest("Hunting not updated");
+        }else {
+            return ResponseMessage.created(hunting, "Hunting updated successfully");
         }
     }
 

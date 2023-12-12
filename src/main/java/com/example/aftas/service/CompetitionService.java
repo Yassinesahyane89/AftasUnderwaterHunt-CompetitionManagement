@@ -13,5 +13,5 @@ public interface CompetitionService {
     Competition updateCompetition(Competition competition, Long id);
     void deleteCompetition(Long id);
     Ranking registerMemberForCompetition(Ranking ranking);
-    Ranking recordCompetitionResult(Ranking ranking, Long id);
+//    Ranking recordCompetitionResult(Ranking ranking, Long id);
 }

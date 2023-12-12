@@ -23,7 +23,7 @@ public class Hunting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int nomberOfFish;
+    private int numberOfFish;
 
     @ManyToOne
     private Competition competition;
@@ -32,7 +32,6 @@ public class Hunting {
     private Member member;
 
     @ManyToOne
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Fish fish;
 
     @CreationTimestamp

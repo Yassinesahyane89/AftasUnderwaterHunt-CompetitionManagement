@@ -64,6 +64,7 @@ public class Competition {
     private List<Ranking> ranking;
 
     @OneToMany(mappedBy = "competition")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Hunting> hunting;
 
     @CreationTimestamp

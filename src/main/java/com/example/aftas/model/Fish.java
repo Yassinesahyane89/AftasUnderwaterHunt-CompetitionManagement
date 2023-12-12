@@ -1,5 +1,6 @@
 package com.example.aftas.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -40,6 +41,7 @@ public class Fish {
     private double weight;
 
     @OneToMany(mappedBy = "fish")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Hunting> hunting;
 
     @ManyToOne

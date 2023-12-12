@@ -76,11 +76,4 @@ public class CompetitionController {
         return ResponseMessage.ok(ranking,"Member registered successfully");
     }
 
-    // record competition result
-    @PostMapping("/{id}/record-result")
-    public ResponseEntity recordCompetitionResult(@Valid @RequestBody RecordResultDTO recordResultDTO, @PathVariable Long id) {
-        Ranking ranking = competitionService.recordCompetitionResult(recordResultDTO.toRanking(), id);
-        return ResponseMessage.ok(ranking,"Competition result recorded successfully");
-    }
-
 }

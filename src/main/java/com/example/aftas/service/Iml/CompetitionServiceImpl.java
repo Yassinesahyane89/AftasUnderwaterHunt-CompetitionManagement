@@ -6,6 +6,7 @@ import com.example.aftas.model.Competition;
 import com.example.aftas.model.Member;
 import com.example.aftas.model.Ranking;
 import com.example.aftas.repository.CompetitionRepository;
+import com.example.aftas.repository.RankingRepository;
 import com.example.aftas.service.CompetitionService;
 import com.example.aftas.service.MemberService;
 import com.example.aftas.service.RankingService;
@@ -21,13 +22,14 @@ import java.util.List;
 public class CompetitionServiceImpl implements CompetitionService {
 
     private final CompetitionRepository competitionRepository;
-    private final MemberService memberService;
-    private final RankingService rankingService;
 
-    public CompetitionServiceImpl(CompetitionRepository competitionRepository, MemberService memberService, RankingService rankingService) {
+    private RankingRepository rankingRepository;
+    private final MemberService memberService;
+
+    public CompetitionServiceImpl(CompetitionRepository competitionRepository, RankingRepository rankingRepository, MemberService memberService) {
         this.competitionRepository = competitionRepository;
+        this.rankingRepository = rankingRepository;
         this.memberService = memberService;
-        this.rankingService = rankingService;
     }
     @Override
     public Competition getCompetitionById(Long id) {
@@ -141,13 +143,13 @@ public class CompetitionServiceImpl implements CompetitionService {
             throw new OperationException("Competition id " + competitionId + " is closed for registration");
         }
         // here i want to register the member for the competition
-        return rankingService.addRanking(ranking1);
+        return rankingRepository.save(ranking1);
     }
 
-    @Override
-    public Ranking recordCompetitionResult(Ranking ranking, Long id) {
-        return rankingService.updateRankingScore(ranking, id);
-    }
+//    @Override
+//    public Ranking recordCompetitionResult(Ranking ranking, Long id) {
+////        return rankingService.updateRankingScore(ranking, id);
+//    }
 //    @Override
 //    public void recordCompetitionResult(Ranking ranking) {
 //        Long competitionId = ranking.getCompetition().getId();
