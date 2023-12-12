@@ -33,10 +33,6 @@ public class RankingServiceImpl implements RankingService {
         return rankingRepository.findById(id).orElseThrow(() -> new RuntimeException("Ranking id " + id + " not found"));
     }
     @Override
-    public Ranking addRanking(Ranking ranking) {
-        return rankingRepository.save(ranking);
-    }
-    @Override
     public Ranking updateRanking(Ranking ranking, Long id) {
         Ranking existingRanking = getRankingById(id);
         existingRanking.setRank(ranking.getRank());

@@ -1,8 +1,10 @@
 package com.example.aftas.controller;
 
+import com.example.aftas.dto.UpdateRequestRankingDTO;
 import com.example.aftas.handlers.response.ResponseMessage;
 import com.example.aftas.model.Ranking;
 import com.example.aftas.service.RankingService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,9 +32,9 @@ public class RankingController {
     }
 
     // update ranking
-    @GetMapping("/{id}")
-    public ResponseEntity updateRanking(@RequestBody Ranking ranking, @PathVariable Long id) {
-        Ranking ranking1 = rankingService.updateRanking(ranking, id);
+    @PutMapping("/{id}")
+    public ResponseEntity updateRanking(@Valid @RequestBody UpdateRequestRankingDTO updateRequestRankingDTO, @PathVariable Long id) {
+        Ranking ranking1 = rankingService.updateRanking(updateRequestRankingDTO.toRanking(), id);
         return ResponseMessage.ok(ranking1,"Success");
     }
 
